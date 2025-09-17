@@ -1,0 +1,536 @@
+Table "apikey" {
+  "id" varchar(36) [pk, not null]
+  "apiKey" varchar(255) [not null]
+  "apiSecret" varchar(255) [not null]
+  "keyName" varchar(255) [not null]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "workspaceId" varchar(36) [default: NULL]
+
+  Indexes {
+    workspaceId [name: "idx_apikey_workspaceId"]
+  }
+}
+
+Table "assistant" {
+  "id" varchar(36) [pk, not null]
+  "credential" varchar(255) [not null]
+  "details" text [not null]
+  "iconSrc" varchar(255) [default: NULL]
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "workspaceId" varchar(36) [default: NULL]
+  "type" text
+
+  Indexes {
+    workspaceId [name: "idx_assistant_workspaceId"]
+  }
+}
+
+Table "chat_flow" {
+  "id" varchar(36) [pk, not null]
+  "name" varchar(255) [not null]
+  "flowData" longtext
+  "deployed" tinyint [default: NULL]
+  "isPublic" tinyint [default: NULL]
+  "apikeyid" varchar(255) [default: NULL]
+  "chatbotConfig" text
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "apiConfig" text
+  "analytic" text
+  "category" text
+  "speechToText" text
+  "type" text
+  "workspaceId" varchar(36) [default: NULL]
+  "followUpPrompts" text
+
+  Indexes {
+    workspaceId [name: "idx_chat_flow_workspaceId"]
+  }
+}
+
+Table "chat_message" {
+  "id" varchar(36) [pk, not null]
+  "role" varchar(255) [not null]
+  "chatflowid" varchar(255) [not null]
+  "content" longtext
+  "sourceDocuments" text
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "chatType" varchar(255) [not null, default: 'INTERNAL']
+  "chatId" varchar(255) [not null]
+  "memoryType" varchar(255) [default: NULL]
+  "sessionId" varchar(255) [default: NULL]
+  "usedTools" longtext
+  "fileAnnotations" text
+  "fileUploads" text
+  "leadEmail" text
+  "agentReasoning" longtext
+  "action" longtext
+  "artifacts" longtext
+  "followUpPrompts" text
+  "executionId" text
+
+  Indexes {
+    chatflowid [name: "IDX_e574527322272fd838f4f0f3d3"]
+  }
+}
+
+Table "chat_message_feedback" {
+  "id" varchar(36) [pk, not null]
+  "chatflowid" varchar(255) [not null]
+  "content" text
+  "chatId" varchar(255) [not null]
+  "messageId" varchar(255) [not null]
+  "rating" varchar(255) [not null]
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+}
+
+Table "credential" {
+  "id" varchar(36) [pk, not null]
+  "name" varchar(255) [not null]
+  "credentialName" varchar(255) [not null]
+  "encryptedData" text [not null]
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "workspaceId" varchar(36) [default: NULL]
+
+  Indexes {
+    workspaceId [name: "idx_credential_workspaceId"]
+  }
+}
+
+Table "custom_template" {
+  "id" varchar(36) [pk, not null]
+  "name" varchar(255) [not null]
+  "flowData" text [not null]
+  "description" varchar(255) [default: NULL]
+  "badge" varchar(255) [default: NULL]
+  "framework" varchar(255) [default: NULL]
+  "usecases" varchar(255) [default: NULL]
+  "type" varchar(30) [default: NULL]
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "workspaceId" varchar(36) [default: NULL]
+
+  Indexes {
+    workspaceId [name: "idx_custom_template_workspaceId"]
+  }
+}
+
+Table "dataset" {
+  "id" varchar(36) [pk, not null]
+  "name" varchar(255) [not null]
+  "description" varchar(255) [default: NULL]
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "workspaceId" varchar(36) [default: NULL]
+
+  Indexes {
+    workspaceId [name: "idx_dataset_workspaceId"]
+  }
+}
+
+Table "dataset_row" {
+  "id" varchar(36) [pk, not null]
+  "datasetId" varchar(36) [not null]
+  "input" longtext [not null]
+  "output" longtext
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "sequence_no" int [default: '-1']
+}
+
+Table "document_store" {
+  "id" varchar(36) [pk, not null]
+  "name" varchar(255) [not null]
+  "description" varchar(255) [default: NULL]
+  "loaders" longtext
+  "whereUsed" text
+  "status" varchar(20) [not null]
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "vectorStoreConfig" text
+  "embeddingConfig" text
+  "recordManagerConfig" text
+  "workspaceId" varchar(36) [default: NULL]
+
+  Indexes {
+    workspaceId [name: "idx_document_store_workspaceId"]
+  }
+}
+
+Table "document_store_file_chunk" {
+  "id" varchar(36) [pk, not null]
+  "docId" varchar(36) [not null]
+  "storeId" varchar(36) [not null]
+  "chunkNo" int [not null]
+  "pageContent" text
+  "metadata" text
+
+  Indexes {
+    docId [name: "IDX_e76bae1780b77e56aab1h2asd4"]
+    storeId [name: "IDX_e213b811b01405a42309a6a410"]
+  }
+}
+
+Table "evaluation" {
+  "id" varchar(36) [pk, not null]
+  "chatflowId" longtext [not null]
+  "datasetId" longtext [not null]
+  "name" varchar(255) [not null]
+  "chatflowName" varchar(255) [not null]
+  "datasetName" varchar(255) [not null]
+  "additionalConfig" longtext
+  "average_metrics" longtext
+  "status" varchar(10) [not null]
+  "evaluationType" varchar(20) [not null]
+  "runDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "workspaceId" varchar(36) [default: NULL]
+
+  Indexes {
+    workspaceId [name: "idx_evaluation_workspaceId"]
+  }
+}
+
+Table "evaluation_run" {
+  "id" varchar(36) [pk, not null]
+  "evaluationId" varchar(36) [not null]
+  "expectedOutput" longtext [not null]
+  "actualOutput" longtext [not null]
+  "evaluators" longtext
+  "input" longtext
+  "metrics" text
+  "llmEvaluators" text
+  "runDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "errors" longtext [default: `_utf8mb4'[]'`]
+}
+
+Table "evaluator" {
+  "id" varchar(36) [pk, not null]
+  "name" varchar(255) [not null]
+  "type" varchar(25) [default: NULL]
+  "config" longtext
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "workspaceId" varchar(36) [default: NULL]
+
+  Indexes {
+    workspaceId [name: "idx_evaluator_workspaceId"]
+  }
+}
+
+Table "execution" {
+  "id" varchar(36) [pk, not null]
+  "executionData" longtext [not null]
+  "action" text
+  "state" varchar(255) [not null]
+  "agentflowId" varchar(255) [not null]
+  "sessionId" varchar(255) [not null]
+  "isPublic" tinyint(1) [default: NULL]
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "stoppedDate" datetime(6) [default: NULL]
+  "workspaceId" varchar(36) [default: NULL]
+
+  Indexes {
+    workspaceId [name: "idx_execution_workspaceId"]
+  }
+}
+
+Table "lead" {
+  "id" varchar(36) [pk, not null]
+  "chatflowid" varchar(255) [not null]
+  "chatId" varchar(255) [not null]
+  "name" text
+  "email" text
+  "phone" text
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+}
+
+Table "login_activity" {
+  "id" varchar(36) [pk, not null]
+  "username" varchar(255) [default: NULL]
+  "message" varchar(255) [not null]
+  "activity_code" int [not null]
+  "attemptedDateTime" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "login_mode" varchar(25) [default: NULL]
+}
+
+Table "login_method" {
+  "id" varchar(36) [pk, not null, default: `uuid()`]
+  "organizationId" varchar(36) [default: NULL]
+  "name" varchar(100) [not null]
+  "config" text [not null]
+  "status" varchar(20) [not null, default: 'enable']
+  "createdDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "updatedDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "createdBy" varchar(36) [default: NULL]
+  "updatedBy" varchar(36) [default: NULL]
+
+  Indexes {
+    organizationId [name: "fk_login_method_organizationId"]
+    createdBy [name: "fk_login_method_createdBy"]
+    updatedBy [name: "fk_login_method_updatedBy"]
+  }
+}
+
+Table "login_sessions" {
+  "session_id" varchar(128) [pk, not null]
+  "expires" int [not null]
+  "data" mediumtext
+}
+
+Table "migrations" {
+  "id" int [pk, not null, increment]
+  "timestamp" bigint [not null]
+  "name" varchar(255) [not null]
+}
+
+Table "organization" {
+  "id" varchar(36) [pk, not null, default: `uuid()`]
+  "name" varchar(100) [not null, default: 'Default Organization']
+  "customerId" varchar(100) [default: NULL]
+  "subscriptionId" varchar(100) [default: NULL]
+  "createdDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "updatedDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "createdBy" varchar(36) [not null]
+  "updatedBy" varchar(36) [not null]
+
+  Indexes {
+    createdBy [name: "fk_organization_createdBy"]
+    updatedBy [name: "fk_organization_updatedBy"]
+  }
+}
+
+Table "organization_user" {
+  "organizationId" varchar(36) [not null]
+  "userId" varchar(36) [not null]
+  "roleId" varchar(36) [not null]
+  "status" varchar(20) [not null, default: 'active']
+  "createdDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "updatedDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "createdBy" varchar(36) [not null]
+  "updatedBy" varchar(36) [not null]
+
+  Indexes {
+    (organizationId, userId) [pk]
+    userId [name: "fk_organization_user_userId"]
+    roleId [name: "fk_organization_user_roleId"]
+    createdBy [name: "fk_organization_user_createdBy"]
+    updatedBy [name: "fk_organization_user_updatedBy"]
+  }
+}
+
+Table "role" {
+  "id" varchar(36) [pk, not null, default: `uuid()`]
+  "organizationId" varchar(36) [default: NULL]
+  "name" varchar(100) [not null]
+  "description" text
+  "permissions" text [not null]
+  "createdDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "updatedDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "createdBy" varchar(36) [default: NULL]
+  "updatedBy" varchar(36) [default: NULL]
+
+  Indexes {
+    organizationId [name: "fk_role_organizationId"]
+    createdBy [name: "fk_role_createdBy"]
+    updatedBy [name: "fk_role_updatedBy"]
+  }
+}
+
+Table "tool" {
+  "id" varchar(36) [pk, not null]
+  "name" varchar(255) [not null]
+  "description" text [not null]
+  "color" varchar(255) [not null]
+  "iconSrc" varchar(255) [default: NULL]
+  "schema" text
+  "func" text
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "workspaceId" varchar(36) [default: NULL]
+
+  Indexes {
+    workspaceId [name: "idx_tool_workspaceId"]
+  }
+}
+
+Table "upsert_history" {
+  "id" varchar(36) [pk, not null]
+  "chatflowid" varchar(255) [not null]
+  "result" text [not null]
+  "flowData" longtext
+  "date" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+
+  Indexes {
+    chatflowid [name: "IDX_a0b59fd66f6e48d2b198123cb6"]
+  }
+}
+
+Table "upsertions_records" {
+  "uuid" varchar(36) [pk, not null, default: `uuid()`]
+  "key" varchar(255) [not null]
+  "namespace" varchar(255) [not null]
+  "updated_at" double [not null]
+  "group_id" longtext
+
+  Indexes {
+    (key, namespace) [unique, name: "unique_key_namespace"]
+  }
+}
+
+Table "user" {
+  "id" varchar(36) [pk, not null, default: `uuid()`]
+  "name" varchar(100) [not null]
+  "email" varchar(255) [not null]
+  "credential" text
+  "tempToken" text
+  "tokenExpiry" timestamp [default: NULL]
+  "status" varchar(20) [not null, default: 'unverified']
+  "createdDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "updatedDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "createdBy" varchar(36) [not null]
+  "updatedBy" varchar(36) [not null]
+
+  Indexes {
+    email [unique, name: "email"]
+    createdBy [name: "fk_user_createdBy"]
+    updatedBy [name: "fk_user_updatedBy"]
+  }
+}
+
+Table "variable" {
+  "id" varchar(36) [pk, not null]
+  "name" varchar(255) [not null]
+  "value" text [not null]
+  "type" varchar(255) [default: NULL]
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "workspaceId" varchar(36) [default: NULL]
+
+  Indexes {
+    workspaceId [name: "idx_variable_workspaceId"]
+  }
+}
+
+Table "workspace" {
+  "id" varchar(36) [pk, not null]
+  "name" varchar(100) [default: NULL]
+  "description" text
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "organizationId" varchar(36) [not null]
+  "createdBy" varchar(36) [not null]
+  "updatedBy" varchar(36) [not null]
+
+  Indexes {
+    organizationId [name: "fk_organizationId"]
+    createdBy [name: "fk_workspace_createdBy"]
+    updatedBy [name: "fk_workspace_updatedBy"]
+  }
+}
+
+Table "workspace_shared" {
+  "id" varchar(36) [pk, not null]
+  "workspaceId" varchar(36) [not null]
+  "sharedItemId" varchar(50) [not null]
+  "itemType" varchar(50) [not null]
+  "createdDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+  "updatedDate" datetime(6) [not null, default: `CURRENT_TIMESTAMP(6)`]
+
+  Indexes {
+    workspaceId [name: "idx_workspace_shared_workspaceId"]
+  }
+}
+
+Table "workspace_user" {
+  "workspaceId" varchar(36) [not null]
+  "userId" varchar(36) [not null]
+  "roleId" varchar(36) [not null]
+  "status" varchar(20) [not null, default: 'invited']
+  "lastLogin" timestamp [default: NULL]
+  "createdDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "updatedDate" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "createdBy" varchar(36) [not null]
+  "updatedBy" varchar(36) [not null]
+
+  Indexes {
+    (workspaceId, userId) [pk]
+    userId [name: "fk_workspace_user_userId"]
+    roleId [name: "fk_workspace_user_roleId"]
+    createdBy [name: "fk_workspace_user_createdBy"]
+    updatedBy [name: "fk_workspace_user_updatedBy"]
+  }
+}
+
+Ref "fk_apikey_workspaceId":"workspace"."id" < "apikey"."workspaceId"
+
+Ref "fk_assistant_workspaceId":"workspace"."id" < "assistant"."workspaceId"
+
+Ref "fk_chat_flow_workspaceId":"workspace"."id" < "chat_flow"."workspaceId"
+
+Ref "fk_credential_workspaceId":"workspace"."id" < "credential"."workspaceId"
+
+Ref "fk_custom_template_workspaceId":"workspace"."id" < "custom_template"."workspaceId"
+
+Ref "fk_dataset_workspaceId":"workspace"."id" < "dataset"."workspaceId"
+
+Ref "fk_document_store_workspaceId":"workspace"."id" < "document_store"."workspaceId"
+
+Ref "fk_evaluation_workspaceId":"workspace"."id" < "evaluation"."workspaceId"
+
+Ref "fk_evaluator_workspaceId":"workspace"."id" < "evaluator"."workspaceId"
+
+Ref "fk_execution_workspaceId":"workspace"."id" < "execution"."workspaceId"
+
+Ref "fk_login_method_createdBy":"user"."id" < "login_method"."createdBy"
+
+Ref "fk_login_method_organizationId":"organization"."id" < "login_method"."organizationId"
+
+Ref "fk_login_method_updatedBy":"user"."id" < "login_method"."updatedBy"
+
+Ref "fk_organization_createdBy":"user"."id" < "organization"."createdBy"
+
+Ref "fk_organization_updatedBy":"user"."id" < "organization"."updatedBy"
+
+Ref "fk_organization_user_createdBy":"user"."id" < "organization_user"."createdBy"
+
+Ref "fk_organization_user_organizationId":"organization"."id" < "organization_user"."organizationId"
+
+Ref "fk_organization_user_roleId":"role"."id" < "organization_user"."roleId"
+
+Ref "fk_organization_user_updatedBy":"user"."id" < "organization_user"."updatedBy"
+
+Ref "fk_organization_user_userId":"user"."id" < "organization_user"."userId"
+
+Ref "fk_role_createdBy":"user"."id" < "role"."createdBy"
+
+Ref "fk_role_organizationId":"organization"."id" < "role"."organizationId"
+
+Ref "fk_role_updatedBy":"user"."id" < "role"."updatedBy"
+
+Ref "fk_tool_workspaceId":"workspace"."id" < "tool"."workspaceId"
+
+Ref "fk_user_createdBy":"user"."id" < "user"."createdBy"
+
+Ref "fk_user_updatedBy":"user"."id" < "user"."updatedBy"
+
+Ref "fk_variable_workspaceId":"workspace"."id" < "variable"."workspaceId"
+
+Ref "fk_organizationId":"organization"."id" < "workspace"."organizationId"
+
+Ref "fk_workspace_createdBy":"user"."id" < "workspace"."createdBy"
+
+Ref "fk_workspace_updatedBy":"user"."id" < "workspace"."updatedBy"
+
+Ref "fk_workspace_shared_workspaceId":"workspace"."id" < "workspace_shared"."workspaceId"
+
+Ref "fk_workspace_user_createdBy":"user"."id" < "workspace_user"."createdBy"
+
+Ref "fk_workspace_user_roleId":"role"."id" < "workspace_user"."roleId"
+
+Ref "fk_workspace_user_updatedBy":"user"."id" < "workspace_user"."updatedBy"
+
+Ref "fk_workspace_user_userId":"user"."id" < "workspace_user"."userId"
+
+Ref "fk_workspace_user_workspaceId":"workspace"."id" < "workspace_user"."workspaceId"
