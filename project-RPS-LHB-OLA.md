@@ -232,12 +232,143 @@ Validar que la herramienta Orkestify cumple con los requisitos definidos en los 
 
 ### **3.1. Diagrama del modelo de datos:**
 
-> Recomendamos usar mermaid para el modelo de datos, y utilizar todos los parámetros que permite la sintaxis para dar el máximo detalle, por ejemplo las claves primarias y foráneas.
-
+El diagrama del modelo de datos se puede encontrar en el siguiente enlace:
+- [Diagrama del modelo de datos](https://dbdocs.io/devel/orkestify)
+- Password: orkestify
 
 ### **3.2. Descripción de entidades principales:**
 
-> Recuerda incluir el máximo detalle de cada entidad, como el nombre y tipo de cada atributo, descripción breve si procede, claves primarias y foráneas, relaciones y tipo de relación, restricciones (unique, not null…), etc.
+A continuación se describen las tablas principales del modelo de datos, indicando su propósito y campos clave:
+
+---
+
+#### 🔑 Autenticación y seguridad
+
+- **apikey**  
+  Almacena las claves de acceso a la API. Incluye el `apiKey`, `apiSecret` y un nombre descriptivo (`keyName`).  
+  Relacionada con un `workspaceId` para delimitar el ámbito.
+
+- **credential**  
+  Gestiona credenciales cifradas de acceso a servicios externos. Contiene el nombre visible y los datos encriptados.
+
+- **login_activity**  
+  Registra intentos de inicio de sesión, incluyendo mensaje, código de actividad y modo de login.  
+  Útil para auditoría y seguridad.
+
+- **login_method**  
+  Define métodos de autenticación permitidos para la organización (ej. SSO, password).  
+  Contiene configuración, estado y metadatos de creación/actualización.
+
+- **login_sessions**  
+  Mantiene sesiones activas de login (`session_id`, `expires`, `data`).
+
+- **user**  
+  Representa a los usuarios del sistema con nombre, email, estado, credenciales asociadas y trazabilidad de creación/actualización.
+
+---
+
+#### 👥 Organización y roles
+
+- **organization**  
+  Entidad que agrupa usuarios y workspaces. Contiene nombre, customerId, subscriptionId.  
+  Asociada a un creador y actualizador (`user`).
+
+- **role**  
+  Define roles dentro de una organización, con nombre, permisos y descripción.
+
+- **organization_user**  
+  Relación entre usuarios, organizaciones y roles. Incluye estado (activo/invitado) y fechas de creación/actualización.
+
+- **workspace**  
+  Espacio de trabajo dentro de una organización. Contiene nombre, descripción y referencia a su organización.
+
+- **workspace_user**  
+  Relación entre usuarios y workspaces. Indica el rol dentro del workspace, estado e historial de login.
+
+- **workspace_shared**  
+  Registra elementos compartidos dentro de un workspace (documentos, flujos, etc.).
+
+- **variable**  
+  Define variables de configuración a nivel de workspace, incluyendo nombre, valor y tipo.
+
+---
+
+#### 🤖 Asistentes y flujos
+
+- **assistant**  
+  Almacena asistentes creados en Flowise. Incluye credenciales, detalles, icono y tipo.
+
+- **chat_flow**  
+  Representa un flujo de conversación/configuración en Flowise. Incluye nombre, `flowData`, estado de despliegue, configuración de API y analítica.
+
+- **chat_message**  
+  Mensajes generados en un chatflow. Contiene rol (usuario/sistema), contenido, documentos fuente, herramientas usadas, anotaciones, reasoning del agente y metadatos de sesión.
+
+- **chat_message_feedback**  
+  Feedback de mensajes concretos (ej. rating positivo/negativo). Vinculado a `chatId` y `messageId`.
+
+- **lead**  
+  Registra leads captados a través de chatflows (nombre, email, teléfono) y su relación con el `chatflowid`.
+
+- **upsert_history**  
+  Histórico de actualizaciones (`upserts`) realizadas en un chatflow, guardando resultado y datos de flujo.
+
+- **upsertions_records**  
+  Registra operaciones de inserción/actualización en namespace y claves específicas.
+
+---
+
+#### 📚 Datos, documentos y entrenamientos
+
+- **custom_template**  
+  Plantillas de flujo personalizadas con nombre, datos del flujo, descripción y metadatos.
+
+- **dataset**  
+  Agrupa colecciones de datos para entrenamiento o pruebas. Contiene nombre y descripción.
+
+- **dataset_row**  
+  Filas individuales dentro de un dataset. Contienen input, output y orden de secuencia.
+
+- **document_store**  
+  Repositorio de documentos para búsqueda o embeddings. Incluye configuración de vector store y embeddings.
+
+- **document_store_file_chunk**  
+  Fragmentos de documentos almacenados en `document_store`. Permite dividir en chunks con metadatos.
+
+---
+
+#### 🧪 Evaluaciones y ejecución
+
+- **evaluation**  
+  Registro de evaluaciones de un chatflow frente a un dataset. Contiene métricas, configuración y tipo de evaluación.
+
+- **evaluation_run**  
+  Ejecuciones individuales de una evaluación. Guarda input, output esperado, output real, métricas y errores.
+
+- **evaluator**  
+  Define evaluadores configurables con nombre, tipo y parámetros.
+
+- **execution**  
+  Registra ejecuciones de flujos/agentes. Contiene datos completos de la ejecución, estado, acción y fechas de creación/actualización.
+
+---
+
+#### 🛠️ Utilidades y soporte
+
+- **tool**  
+  Tabla de herramientas disponibles para agentes (nombre, descripción, icono, función, esquema).
+
+- **migrations**  
+  Control de migraciones de base de datos (id, timestamp, nombre).
+
+---
+
+### Resumen de relaciones principales
+- La mayoría de tablas tienen referencia a **workspaceId**, lo que segmenta la información por espacio de trabajo.
+- **Usuarios** se relacionan con **organizaciones**, **roles** y **workspaces** mediante tablas de unión (`organization_user`, `workspace_user`).
+- **Chatflows** y **asistentes** se asocian a un workspace y pueden generar mensajes, leads y evaluaciones.
+- **Datasets**, **documentos** y **evaluaciones** se relacionan para soportar entrenamiento y validación de modelos.
+
 
 ---
 
